@@ -1,0 +1,59 @@
+#!/usr/bin/env python
+from __future__ import print_function
+
+from collections import OrderedDict
+import glob
+
+from pip.index import PackageFinder
+from pip.req import InstallRequirement, RequirementSet
+from pip.locations import build_prefix, src_prefix
+
+
+for filename in glob.glob("requirement*.in"):
+    print("processing", filename)
+    with open(filename, "r") as f:
+
+        deps = OrderedDict()
+
+        for line in f.readlines():
+            line = line.strip()
+            deps[line] = []
+
+            requirement_set = RequirementSet(
+                build_dir=build_prefix,
+                src_dir=src_prefix,
+                download_dir=None)
+
+            requirement = InstallRequirement.from_line(line, None)
+
+            requirement_set.add_requirement(requirement)
+
+            install_options = []
+            global_options = []
+            finder = PackageFinder(find_links=[], index_urls=["http://pypi.python.org/simple/"])
+
+            requirement_set.prepare_files(finder, force_root_egg_info=False, bundle=False)
+            requirement_set.install(install_options, global_options)
+
+            for package in requirement_set.requirements.values():
+                deps[line].append("%s==%s" % (package.name, package.installed_version))
+
+            for package in requirement_set.successfully_installed:
+                deps[line].append("%s==%s" % (package.name, package.installed_version))
+
+            deps[line] = set(deps[line])
+
+        package_set = set([])
+
+        lock_filename = filename.replace(".in", ".txt")
+        with open(lock_filename, "w") as output:
+            for requested_package in deps:
+                print("deps:", requested_package)
+                output.write("\n# requirement '%s' depends on:\n"%(requested_package,))
+                for dependency in deps[requested_package]:
+                    print("dependency", dependency)
+                    if dependency not in package_set:
+                        package_set.add(dependency)
+                        output.write("%s\n"%(dependency,))
+                    else:
+                        output.write("#%s\n"%(dependency,))

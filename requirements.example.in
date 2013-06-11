@@ -1,0 +1,3 @@
+pyramid==1.4.2
+jinja2
+txtemplate
