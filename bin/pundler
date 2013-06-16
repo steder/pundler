@@ -47,13 +47,15 @@ for filename in glob.glob("requirement*.in"):
 
         lock_filename = filename.replace(".in", ".txt")
         with open(lock_filename, "w") as output:
+            output.write("# this file generated from '%s' by pundler:\n" % (filename,))
             for requested_package in deps:
-                print("deps:", requested_package)
-                output.write("\n# requirement '%s' depends on:\n"%(requested_package,))
+                output.write("# requirement '%s' depends on:\n" % (requested_package,))
                 for dependency in deps[requested_package]:
                     print("dependency", dependency)
                     if dependency not in package_set:
+                        dependency = dependency.lower()
                         package_set.add(dependency)
-                        output.write("%s\n"%(dependency,))
+                        output.write("%s\n" % (dependency,))
                     else:
-                        output.write("#%s\n"%(dependency,))
+                        output.write("#%s\n" % (dependency,))
+                output.write("\n")
