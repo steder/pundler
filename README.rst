@@ -1,6 +1,8 @@
 Pundler_
 ----------------------
 
+.. image:: https://travis-ci.org/steder/pundler.png
+
 About
 ======================
 
