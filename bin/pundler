@@ -1,16 +1,29 @@
 #!/usr/bin/env python
-from __future__ import print_function
 
 from collections import OrderedDict
 import glob
+
+import logging
 
 from pip.index import PackageFinder
 from pip.req import InstallRequirement, RequirementSet
 from pip.locations import build_prefix, src_prefix
 
+# in this case create the 'pundler' logger, but if called again from elsewhere will give another reference to this one
+logger = logging.getLogger('pundler')
+logger.setLevel(logging.DEBUG)
+
+# change your formatting all from one place, or from the calling program when this gets turned into library code
+formatter = logging.Formatter(fmt = '%(message)s')
+
+#set it up to log to the console for now
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
 
 for filename in glob.glob("requirement*.in"):
-    print("processing", filename)
+    logger.info("processing %s" % filename)
     with open(filename, "r") as f:
 
         deps = OrderedDict()
@@ -51,7 +64,7 @@ for filename in glob.glob("requirement*.in"):
             for requested_package in deps:
                 output.write("# requirement '%s' depends on:\n" % (requested_package,))
                 for dependency in deps[requested_package]:
-                    print("dependency", dependency)
+                    logger.info("dependency %s" % dependency)
                     if dependency not in package_set:
                         dependency = dependency.lower()
                         package_set.add(dependency)
