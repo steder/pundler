@@ -10,9 +10,9 @@ Pundler is an attempt to better manage python requirements files.
 
 Pundler is inspired by Ruby's Gem Bundler_.
 
-Specifically the goal is to process ``requirements.in`` or
-``requirements.txt`` into a frozen lock file similar to ``Gemfile``
-and ``Gemfile.lock`` in the ruby world.
+Specifically the goal is to process ``requirements.in``
+into a frozen lock file ``requirements.txt`` similar to the way ``Gemfile``
+and ``Gemfile.lock`` are related in the ruby world.
 
 The advantage of doing something like this is that your requirements
 file specifies only versions of things that you specifically depend on
@@ -57,18 +57,43 @@ If instead we simply updated the original ``requirements.in`` we could regenerat
 the full requirements (as a ``requirements.txt``) and it would be clear that
 ``adep1==1.0`` was no longer required.
 
-
 Usage
 =======================
 
-Simply run pundler in a directory with your ``requirements.in``::
+Simply run pundler in a directory with your ``requirements.in`` or ``requirements.yml``::
 
   python setup.py develop
-  pundler
+  pundler install
 
 Pundler will process the file and create a ``requirements.txt``
 that has all packages pinned to specific versions and
 identifies clearly what depends on what packages depend on what.
+
+------------------------
+Updating
+------------------------
+
+To update all your dependencies::
+
+  pundler update
+
+This should update all unpinned dependencies to the latest
+version and appropriately update your generated ``requirements.txt``.
+
+------------------------
+Virtualenv
+------------------------
+
+By default Pundler operates on the current environment (whatever
+`pip` is pointed at at the moment.)
+
+If you have a virtualenv enabled when you run ``pundler install``
+it will be used.
+
+If you'd like to specify a specific virtualenv when you install or update simply do::
+
+  pundler install myvirtualenv
+  pundler update myvirtualenv
 
 Example
 ========================
@@ -107,6 +132,46 @@ Pundler will generate the this ``requirements.example.txt``::
   txtemplate==1.0.2
   #zope.interface==4.0.5
   #setuptools==0.6c11
+
+Advanced Configuration
+=====================================
+
+An alternative to ``requirements.in`` files is a simple
+``requirements.yml`` configuration file.
+
+The above example would look like::
+
+  sources:
+   - https://pypi.python.org/simple/
+  requirements:
+   - pyramid==1.4.2
+   - jinja2
+   - txtemplate
+
+Above, sources is optional.
+
+A more interesting configuration with multiple groups like
+development and production would look like this::
+
+  sources:
+    - https://pypi.python.org/simple/
+  groups:
+    development:
+      - nose
+    production:
+      - pyramid==1.4.2
+      - jinja2
+      - txtemplate
+  # by default packages from all groups are installed
+  # but you can customize this so that you can install
+  # only specific things by defining `targets` and `default`
+  targets: # select a target with `pundler install <target>`
+    development: # targets are a list of groups to install
+     - production
+     - development
+    production:
+     - production
+    default: production # what happens if you just do `pundler install`
 
 
 .. _pundler: http://github.com/steder/pundler
