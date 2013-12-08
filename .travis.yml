@@ -10,4 +10,4 @@ python:
 install:
   - python setup.py install
 # command to run tests
-script: nosetests
+script: python setup.py test

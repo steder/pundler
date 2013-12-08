@@ -4,11 +4,15 @@ import os
 from setuptools import setup, find_packages
 
 
-requirements = ["argparse",
-                "pip",
-                ]
-test_requirements = ["nose",
-                     ]
+requirements = [
+    "argparse",
+    "pip",
+]
+
+test_requirements = [
+    "mock",
+    "nose",
+]
 
 root = os.path.dirname(__file__)
 
