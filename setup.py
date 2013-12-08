@@ -5,6 +5,7 @@ from setuptools import setup, find_packages
 
 
 requirements = ["argparse",
+                "pip",
                 ]
 test_requirements = ["nose",
                      ]

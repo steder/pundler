@@ -1,4 +1,0 @@
-# TODO: use pundler for our own requirements?!
-argparse==1.2.1
-# TODO: update to latest pip
-pip==1.2.1

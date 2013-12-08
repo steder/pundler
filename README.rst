@@ -10,7 +10,7 @@ Pundler is an attempt to better manage python requirements files.
 
 Pundler is inspired by Ruby's Gem Bundler_.
 
-Specifically the goal is to process ``requirements.in``
+Specifically the goal is to process ``requirements.yml`` or ``requirements.in``
 into a frozen lock file ``requirements.txt`` similar to the way ``Gemfile``
 and ``Gemfile.lock`` are related in the ruby world.
 
@@ -49,9 +49,7 @@ Say we eventually upgrade ``a`` to version 2.0::
   bdep1==2.0
   c==3.0
 
-In ``a==2.0`` the dependency ``adep1==1.0`` is no longer needed.  If we have one
-requirements file with all versions pinned it isn't clear that that dependency can
-now be removed.
+With version ``2.0`` of package ``a`` the dependency ``adep1==1.0`` is no longer needed.  If we have one requirements file with all versions pinned it isn't clear that that dependency can now be removed.
 
 If instead we simply updated the original ``requirements.in`` we could regenerate
 the full requirements (as a ``requirements.txt``) and it would be clear that
@@ -62,15 +60,20 @@ Usage
 
 Simply run pundler in a directory with your ``requirements.in`` or ``requirements.yml``::
 
-  python setup.py develop
   pundler install
 
-Pundler will process the file and create a ``requirements.txt``
-that has all packages pinned to specific versions and
+If ``requirements.txt`` doesn't exist ``Pundler`` will process
+your ``requirements.yml`` or ``requirements.in`` file and create
+a ``requirements.txt`` that has all packages pinned to specific versions and
 identifies clearly what depends on what packages depend on what.
 
+(TODO) If ``requirements.txt`` exists than pundler will pass args through
+to ``pip install``, essentially::
+
+  pip install -r requirements.txt
+
 ------------------------
-Updating
+Updating (TODO)
 ------------------------
 
 To update all your dependencies::
@@ -90,21 +93,16 @@ By default Pundler operates on the current environment (whatever
 If you have a virtualenv enabled when you run ``pundler install``
 it will be used.
 
-If you'd like to specify a specific virtualenv when you install or update simply do::
-
-  pundler install myvirtualenv
-  pundler update myvirtualenv
-
 Example
 ========================
 
-Given the following ``requirements.example.in``::
+Given the following ``requirements.in``::
 
   pyramid==1.4.2
   jinja2
   txtemplate
 
-Pundler will generate the this ``requirements.example.txt``::
+Pundler will generate the this ``requirements.txt``::
 
   # requirement 'pyramid==1.4.2' depends on:
   WebOb==1.2.3
@@ -133,7 +131,7 @@ Pundler will generate the this ``requirements.example.txt``::
   #zope.interface==4.0.5
   #setuptools==0.6c11
 
-Advanced Configuration
+Advanced Configuration (TODO)
 =====================================
 
 An alternative to ``requirements.in`` files is a simple
@@ -176,4 +174,4 @@ development and production would look like this::
 
 .. _pundler: http://github.com/steder/pundler
 .. _bundler: https://github.com/bundler/bundler
-.. _Michael Steder: http://penzilla.net
+.. _Michael Steder: http://mikesteder.com
