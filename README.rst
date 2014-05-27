@@ -88,7 +88,7 @@ Virtualenv
 ------------------------
 
 By default Pundler operates on the current environment (whatever
-`pip` is pointed at at the moment.)
+`pip` is pointed at the moment.)
 
 If you have a virtualenv enabled when you run ``pundler install``
 it will be used.
