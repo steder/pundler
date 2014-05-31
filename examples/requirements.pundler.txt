@@ -1,0 +1,5 @@
+# this file generated from 'requirements.pundler.in' by pundler:
+# requirement 'pundler' depends on:
+argparse==1.2.1
+pundler==0.0.2
+
