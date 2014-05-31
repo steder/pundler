@@ -63,6 +63,7 @@ class Pundler(object):
                 self.args.append(line)
                 continue
 
+            logger.debug("handling requirement: %s", line)
             self.deps[line] = []
 
             requirement_set = RequirementSet(
@@ -88,7 +89,7 @@ class Pundler(object):
             requirement_set.install(install_options, global_options)
 
             for package in requirement_set.requirements.values():
-                if package.satisfied_by.has_metadata('PKG-INFO'):
+                if package.satisfied_by and package.satisfied_by.has_metadata('PKG-INFO'):
                     dep = "%s==%s" % (package.name, package.installed_version)
                     self.deps[line].append(dep)
 
