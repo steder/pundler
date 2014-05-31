@@ -5,10 +5,6 @@ try:
 except:
     import __builtin__ as builtins # NOQA
 
-try:
-    from io import StringIO
-except ImportError:
-    import StringIO
 import sys
 import textwrap
 if sys.version_info < (2, 7):
@@ -55,7 +51,7 @@ class TestGetRequirements(unittest.TestCase):
     @patch.object(builtins, "open")
     def test_get_requirements_in_file_empty(self, mock_open):
         manager = mock_open.return_value.__enter__.return_value
-        manager.readlines.return_value = StringIO(six.u(""))
+        manager.readlines.return_value = six.StringIO(six.u(""))
 
         result = list(core.get_requirements("requirements.in"))
         self.assertEquals(result, [])
@@ -63,8 +59,9 @@ class TestGetRequirements(unittest.TestCase):
     @patch.object(builtins, "open")
     def test_get_requirements_in_file(self, mock_open):
         manager = mock_open.return_value.__enter__.return_value
-        manager.readlines.return_value = StringIO(textwrap.dedent(six.u("""dep1
-        dep2
-        """)))
+        manager.readlines.return_value = six.StringIO((six.u(
+"""dep1
+dep2
+""")))
         result = list(core.get_requirements("requirements.in"))
         self.assertEquals(result, ['dep1', 'dep2'])
