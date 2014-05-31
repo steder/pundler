@@ -6,6 +6,7 @@ python:
   - "3.3"
   # does not have headers provided, please ask https://launchpad.net/~pypy/+archive/ppa
   # maintainers to fix their pypy-dev package.
+  - "3.4"
   - "pypy"
 # command to install dependencies
 install:
