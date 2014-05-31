@@ -11,6 +11,6 @@ python:
 # command to install dependencies
 install:
   - pip install .
-  - pip install mock nose six unittestsix
+  - pip install mock nose six unittest2six
 # command to run tests
 script: nosetests
