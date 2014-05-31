@@ -45,7 +45,7 @@ def get_requirements(filename):
     with open(filename, "r") as f:
         for line in f.readlines():
             line = line.strip()
-            if line.startswith("#"):
+            if line.startswith("#") or not line:
                 continue
             yield line
 
