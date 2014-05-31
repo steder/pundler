@@ -17,6 +17,7 @@ else:
     import unittest
 
 from mock import patch
+import six
 
 from pundler import core
 
@@ -54,7 +55,7 @@ class TestGetRequirements(unittest.TestCase):
     @patch.object(builtins, "open")
     def test_get_requirements_in_file_empty(self, mock_open):
         manager = mock_open.return_value.__enter__.return_value
-        manager.readlines.return_value = StringIO(u"")
+        manager.readlines.return_value = StringIO(six.u(""))
 
         result = list(core.get_requirements("requirements.in"))
         self.assertEquals(result, [])
@@ -62,8 +63,8 @@ class TestGetRequirements(unittest.TestCase):
     @patch.object(builtins, "open")
     def test_get_requirements_in_file(self, mock_open):
         manager = mock_open.return_value.__enter__.return_value
-        manager.readlines.return_value = StringIO(textwrap.dedent(u"""dep1
+        manager.readlines.return_value = StringIO(textwrap.dedent(six.u("""dep1
         dep2
-        """))
+        """)))
         result = list(core.get_requirements("requirements.in"))
         self.assertEquals(result, ['dep1', 'dep2'])
