@@ -64,4 +64,5 @@ class TestGetRequirements(unittest.TestCase):
 dep2
 """)))
         result = list(core.get_requirements("requirements.in"))
-        self.assertEquals(result, ['dep1', 'dep2'])
+        self.assertEquals(result, [six.u('dep1'),
+                                   six.u('dep2')])
