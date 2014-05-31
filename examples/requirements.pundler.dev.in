@@ -1,0 +1,4 @@
+# say that I'm a pundler dev, i'll want nose and mock
+-r requirements.pundler.txt
+mock
+nose

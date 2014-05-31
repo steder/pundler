@@ -1,0 +1,9 @@
+# this file generated from 'requirements.pundler.dev.in' by pundler:
+-r requirements.pundler.txt
+
+# requirement 'mock' depends on:
+mock==1.0.1
+
+# requirement 'nose' depends on:
+nose==1.3.3
+

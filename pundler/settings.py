@@ -1,7 +1,6 @@
 """
 """
 
-REQUIREMENTS_SOURCE_FILES = [
-    "requirements.yml",
-    "requirements.in"
+REQUIREMENTS_SOURCE_GLOBS = [
+    "requirements*.in"
 ]

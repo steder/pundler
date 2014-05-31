@@ -1,9 +1,10 @@
 """
 """
 try:
-    from io import StringIO
-except ImportError:
-    import StringIO
+    import builtins as builtins
+except:
+    import __builtin__ as builtins # NOQA
+
 import sys
 import textwrap
 if sys.version_info < (2, 7):
@@ -12,6 +13,7 @@ else:
     import unittest
 
 from mock import patch
+import six
 
 from pundler import core
 
@@ -22,45 +24,45 @@ class TestPundler(unittest.TestCase):
 
 
 class TestGetRequirementsFile(unittest.TestCase):
-    """
-    """
-    @patch("os.path.exists")
-    def test_no_requirements_file(self, mock_exists):
-        mock_exists.return_value = False
-        self.assertIsNone(core.get_requirement_file(), None)
+    @patch("os.listdir")
+    def test_no_requirements_file(self, mock_listdir):
+        mock_listdir.return_value = []
+        self.assertEquals(core.get_requirement_files(), [])
 
-    @patch("os.path.exists")
-    def test_requirements_in_exists(self, mock_exists):
-        mock_exists.side_effect = lambda x: x == 'requirements.in'
-        self.assertEquals(core.get_requirement_file(), 'requirements.in')
+    @patch("os.listdir")
+    def test_requirements_in_exists(self, mock_listdir):
+        mock_listdir.return_value = ['requirements.in']
+        self.assertEquals(core.get_requirement_files(), ['requirements.in'])
 
-    @patch("os.path.exists")
-    def test_requirements_yml_exists(self, mock_exists):
-        mock_exists.side_effect = lambda x: x == 'requirements.yml'
-        self.assertEquals(core.get_requirement_file(), 'requirements.yml')
+    @patch("os.listdir")
+    def test_requirements_yml_exists(self, mock_listdir):
+        """We don't yet support yaml"""
+        mock_listdir.return_value = ['requirements.yml']
+        self.assertEquals(core.get_requirement_files(), [])
 
 
 
 class TestGetRequirements(unittest.TestCase):
-    """
-    """
-    def test_get_requirements_empty(self):
-        result = list(core.get_requirements(None))
+    @patch.object(builtins, "open")
+    def test_get_requirements_empty(self, mock_open):
+        result = list(core.get_requirements("requirements.in"))
         self.assertEqual(result, [])
 
-    # @patch("builtins.open")
-    # def test_get_requirements_in_file_empty(self, mock_open):
-    #     manager = mock_open.return_value.__enter__.return_value
-    #     manager.readlines.return_value = StringIO("")
+    @patch.object(builtins, "open")
+    def test_get_requirements_in_file_empty(self, mock_open):
+        manager = mock_open.return_value.__enter__.return_value
+        manager.readlines.return_value = six.StringIO(six.u(""))
 
-    #     result = list(core.get_requirements("requirements.in"))
-    #     self.assertEquals(result, [])
+        result = list(core.get_requirements("requirements.in"))
+        self.assertEquals(result, [])
 
-    # @patch("builtins.open")
-    # def test_get_requirements_in_file(self, mock_open):
-    #     manager = mock_open.return_value.__enter__.return_value
-    #     manager.readlines.return_value = StringIO(textwrap.dedent("""dep1
-    #     dep2"
-    #     """))
-    #     result = list(core.get_requirements("requirements.in"))
-    #     self.assertEquals(result, ['dep1'])
+    @patch.object(builtins, "open")
+    def test_get_requirements_in_file(self, mock_open):
+        manager = mock_open.return_value.__enter__.return_value
+        manager.readlines.return_value = six.StringIO((six.u(
+"""dep1
+dep2
+""")))
+        result = list(core.get_requirements("requirements.in"))
+        self.assertEquals(result, [six.u('dep1'),
+                                   six.u('dep2')])

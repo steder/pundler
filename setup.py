@@ -13,6 +13,8 @@ requirements = [
 test_requirements = [
     "mock",
     "nose",
+    "six",
+    "unittest2six",
 ]
 
 if sys.version_info < (2, 7):
