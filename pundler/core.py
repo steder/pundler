@@ -1,5 +1,8 @@
 import argparse
-from collections import OrderedDict
+try:
+    from ordereddict import OrderedDict
+except ImportError:
+    from collections import OrderedDict
 import logging
 import os
 import textwrap

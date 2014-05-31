@@ -4,8 +4,12 @@ try:
     from io import StringIO
 except ImportError:
     import StringIO
+import sys
 import textwrap
-import unittest
+if sys.version_info < (2, 7):
+    import unittest2 as unittest
+else:
+    import unittest
 
 from mock import patch
 
