@@ -65,7 +65,6 @@ class Pundler(object):
 
             self.deps[line] = []
 
-            print("upgrade?:", self.upgrade)
             requirement_set = RequirementSet(
                 build_dir=build_prefix,
                 src_dir=src_prefix,
@@ -91,12 +90,10 @@ class Pundler(object):
             for package in requirement_set.requirements.values():
                 if package.satisfied_by.has_metadata('PKG-INFO'):
                     dep = "%s==%s" % (package.name, package.installed_version)
-                    print("values:", dep)
                     self.deps[line].append(dep)
 
             for package in requirement_set.successfully_installed:
                 dep = "%s==%s" % (package.name, package.installed_version)
-                print("installed:", dep)
                 self.deps[line].append(dep)
 
             self.deps[line] = set(self.deps[line])
