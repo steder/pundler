@@ -1,8 +1,12 @@
 import argparse
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict # 2.6 fallback
+
 import glob
+
 import logging
-import os
 import sys
 import textwrap
 

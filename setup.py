@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import sys
 
 from setuptools import setup, find_packages
 
@@ -13,6 +14,10 @@ test_requirements = [
     "mock",
     "nose",
 ]
+
+if sys.version_info < (2, 7):
+    requirements.append("ordereddict")
+    test_requirements.append("unittest2")
 
 root = os.path.dirname(__file__)
 
