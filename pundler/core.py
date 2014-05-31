@@ -57,6 +57,12 @@ class Pundler(object):
         self.upgrade = upgrade
 
     def process_requirements(self, filename):
+        # TODO: specify index_urls from optional requirements.yml
+        finder = PackageFinder(
+            find_links=[],
+            index_urls=["http://pypi.python.org/simple/"]
+        )
+
         for line in get_requirements(filename):
             line = line.strip()
             if line.startswith("-"):
@@ -79,11 +85,6 @@ class Pundler(object):
 
             install_options = []
             global_options = []
-            # TODO: specify index_urls from optional requirements.yml
-            finder = PackageFinder(
-                find_links=[],
-                index_urls=["http://pypi.python.org/simple/"]
-            )
 
             requirement_set.prepare_files(finder, force_root_egg_info=False, bundle=False)
             requirement_set.install(install_options, global_options)
