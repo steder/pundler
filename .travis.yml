@@ -10,6 +10,7 @@ python:
   - "pypy"
 # command to install dependencies
 install:
-  - python setup.py install
+  - pip install .
+  - pip install mock nose six unittestsix
 # command to run tests
-script: python setup.py test
+script: nosetests
