@@ -8,10 +8,11 @@ import glob
 
 import logging
 import sys
+import tempfile
 import textwrap
 
 from pip.index import PackageFinder
-from pip.req import InstallRequirement, RequirementSet
+from pip.req import InstallRequirement, RequirementSet, parse_requirements
 from pip.locations import build_prefix, src_prefix
 
 from . import settings
@@ -64,6 +65,12 @@ class Pundler(object):
         )
 
         for line in get_requirements(filename):
+            with tempfile.NamedTemporaryFile() as single_req_file:
+                single_req_file.write(line)
+                single_req_file.flush()
+                for item in parse_requirements(single_req_file.name, finder=finder):
+                    # print('item.name = %r' % item.name)
+                    pass
             line = line.strip()
             if line.startswith("-"):
                 self.args.append(line)
