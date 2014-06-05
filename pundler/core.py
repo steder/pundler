@@ -111,12 +111,15 @@ class Pundler(object):
             for requested_package in self.deps:
                 output.write("# requirement '%s' depends on:\n" % (requested_package,))
                 for dependency in self.deps[requested_package]:
-                    logger.info("dependency %s" % dependency)
+                    dependency = dependency.lower()
                     if dependency not in package_set:
-                        dependency = dependency.lower()
                         package_set.add(dependency)
+                        logger.info("dependency %s", dependency)
                         output.write("%s\n" % (dependency,))
                     else:
+                        logger.info("# dependency %s "
+                                    "(already required by a prior package)",
+                                    dependency)
                         output.write("#%s\n" % (dependency,))
                 output.write("\n")
 
