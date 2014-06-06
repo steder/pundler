@@ -31,10 +31,13 @@ console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
 
-def get_requirement_files():
+def get_requirement_files(args=None):
     """
     Get the "best" requirements file we can find
     """
+    if args and args.input_filename:
+        return [args.input_filename]
+
     paths = []
     for regex in settings.REQUIREMENTS_SOURCE_GLOBS:
         paths.extend(glob.glob(regex))
@@ -75,14 +78,14 @@ class Pundler(object):
         return requirement_set
 
 
-    def process_requirements(self, filename):
+    def process_requirements(self, input_filename, lock_filename=None):
         # TODO: specify index_urls from optional requirements.yml
         finder = PackageFinder(
             find_links=[],
             index_urls=["http://pypi.python.org/simple/"]
         )
 
-        for line in get_requirements(filename):
+        for line in get_requirements(input_filename):
             logger.debug("handling requirement: %s", line)
             self.deps[line] = []
 
@@ -112,9 +115,13 @@ class Pundler(object):
 
         package_set = set([])
 
-        lock_filename = filename.replace(".in", ".txt")
+        if lock_filename is None:
+            lock_filename = input_filename.replace(".in", ".txt")
+
         with open(lock_filename, "w") as output:
-            output.write("# this file generated from '%s' by pundler:\n" % (filename,))
+            output.write("# %s\n" % lock_filename)
+            output.write("# this file generated from '%s' by pundler:\n\n"
+                         % (input_filename,))
             for argument in self.args:
                 output.write("%s\n"%(argument,))
                 output.write("\n")
@@ -136,8 +143,8 @@ class Pundler(object):
 
 
 def install(args):
-    filenames = get_requirement_files()
-    if not filenames:
+    input_filenames = get_requirement_files(args)
+    if not input_filenames:
         logger.warn(
             textwrap.dedent(
             """
@@ -146,9 +153,11 @@ def install(args):
             """) + "\n - ".join([""] + settings.REQUIREMENTS_SOURCE_GLOBS)
         )
         sys.exit(-2)
-    for filename in filenames:
+    for input_filename in input_filenames:
         pundler = Pundler(upgrade=args.upgrade)
-        pundler.process_requirements(filename)
+        pundler.process_requirements(
+            input_filename,
+            lock_filename=args.output_filename)
 
 
 def update(args):
@@ -168,6 +177,12 @@ def get_parser():
                                        help='additional help')
     install_parser = subparsers.add_parser('install')
     install_parser.set_defaults(func=install)
+    install_parser.add_argument(
+        '--input-filename',
+        help='input requirements file')
+    install_parser.add_argument(
+        '--output-filename',
+        help='output requirements file')
     update_parser = subparsers.add_parser('update')
     update_parser.set_defaults(func=update)
     return parser
