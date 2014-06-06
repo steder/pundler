@@ -8,10 +8,11 @@ import glob
 
 import logging
 import sys
+import tempfile
 import textwrap
 
 from pip.index import PackageFinder
-from pip.req import InstallRequirement, RequirementSet
+from pip.req import InstallRequirement, RequirementSet, parse_requirements
 from pip.locations import build_prefix, src_prefix
 
 from . import settings
@@ -56,6 +57,24 @@ class Pundler(object):
         self.args = []
         self.upgrade = upgrade
 
+    def get_requirement_set(self, finder, line):
+        requirement_set = RequirementSet(
+            build_dir=build_prefix,
+            src_dir=src_prefix,
+            download_dir=None,
+            upgrade=self.upgrade,
+        )
+
+        with tempfile.NamedTemporaryFile() as single_req_file:
+            single_req_file.write(line)
+            single_req_file.flush()
+            for requirement in parse_requirements(single_req_file.name, finder=finder):
+                requirement = InstallRequirement.from_line(line, None)
+                requirement_set.add_requirement(requirement)
+
+        return requirement_set
+
+
     def process_requirements(self, filename):
         # TODO: specify index_urls from optional requirements.yml
         finder = PackageFinder(
@@ -64,24 +83,15 @@ class Pundler(object):
         )
 
         for line in get_requirements(filename):
+            logger.debug("handling requirement: %s", line)
+            self.deps[line] = []
+
+            requirement_set = self.get_requirement_set(finder, line)
+
             line = line.strip()
             if line.startswith("-"):
                 self.args.append(line)
                 continue
-
-            logger.debug("handling requirement: %s", line)
-            self.deps[line] = []
-
-            requirement_set = RequirementSet(
-                build_dir=build_prefix,
-                src_dir=src_prefix,
-                download_dir=None,
-                upgrade=self.upgrade,
-            )
-
-            requirement = InstallRequirement.from_line(line, None)
-
-            requirement_set.add_requirement(requirement)
 
             install_options = []
             global_options = []
